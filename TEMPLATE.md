@@ -28,7 +28,7 @@ Structuring a Flutter project that targets multiple platforms can be a challengi
 
 ## Contribution
 
-We love contributions! If you have any suggestions or want to report a bug, please leave it as an [issue](https://github.com/cunarist/flutter-rust-app-template/issues) or a [pull request](https://github.com/cunarist/flutter-rust-app-template/pulls). We will try to respond as quickly as possible.
+If you have any suggestions or want to report a bug, please leave it as an [issue](https://github.com/cunarist/flutter-rust-app-template/issues) or a [pull request](https://github.com/cunarist/flutter-rust-app-template/pulls). We will try to respond as quickly as possible.
 
 # 🧱 Project Structure
 
@@ -38,29 +38,16 @@ Moreover, you can conveniently receive the latest commits from [`flutter-rust-ap
 
 # 👜 System Preparation
 
-Flutter and Rust are required for building the app itself. Python is needed to automate complicated procedures. Git is responsible for version control.
-
 You can use an IDE of your choice. However, [Visual Studio Code](https://code.visualstudio.com/) is recommended because it has extensive support from Flutter and Rust communities.
 
-## Preparing Git
+## Basic Steps
 
-Go to the [official downloads page](https://git-scm.com/downloads)
+1. Git: Go to the [official downloads page](https://git-scm.com/downloads)
+1. Python: This is needed to automate development process. Download it from the app store if your system doesn't provide a pre-installed version. It's also available at [official downloads page](https://www.python.org/downloads/). Make sure `python` is available in the path environment variable. Version 3.11 or higher is recommended.
+1. Rust: Refer to the [official docs](https://doc.rust-lang.org/book/ch01-01-installation.html). Version 1.69 or higher is recommended.
+1. Flutter: Refer to the [official docs](https://docs.flutter.dev/get-started/install). Version 3.10 or higher is recommended.
 
-## Preparing Python
-
-Download it from the app store if your system doesn't provide a pre-installed version. It's also available at [official downloads page](https://www.python.org/downloads/). Make sure `python` is available in the path environment variable. Version 3.11 or higher is recommended.
-
-## Preparing Rust
-
-Refer to the [official docs](https://doc.rust-lang.org/book/ch01-01-installation.html). Version 1.69 or higher is recommended.
-
-## Preparing Flutter
-
-Refer to the [official docs](https://docs.flutter.dev/get-started/install). Version 3.10 or higher is recommended.
-
-## System Verification
-
-You can make sure that your system is ready for development in the terminal.
+And then you can make sure that your system is ready for development in the terminal.
 
 ```
 git --version
@@ -123,8 +110,6 @@ python automate config-filling
 ```
 
 # 🍳 Actual Development
-
-You might need to dive into this section quite often.
 
 Check and fix problems in Python, Dart, and Rust code. For Rust, it checks the code in release mode.
 

@@ -1,3 +1,6 @@
+/// These are the key constants
+/// that define the app's characteristics.
+
 import 'package:flutter/material.dart';
 
 const primaryColor = Color.fromARGB(255, 0, 156, 122);

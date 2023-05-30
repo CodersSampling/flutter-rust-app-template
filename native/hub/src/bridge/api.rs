@@ -16,23 +16,40 @@ pub struct Serialized {
     pub formula: String,
 }
 
+pub struct ViewUpdate {
+    pub display_address: String,
+    pub serialized: Serialized,
+}
+
+pub struct ViewmodelUpdate {
+    pub item_address: String,
+    pub serialized: Serialized,
+}
+
+pub struct UserAction {
+    pub task_address: String,
+    pub serialized: Serialized,
+}
+
 #[derive(Debug)]
 pub struct EndpointsOnRustThread {
-    pub user_action_receiver: Receiver<(String, Serialized)>,
-    pub viewmodel_update_sender: Sender<(String, Serialized)>,
+    pub user_action_receiver: Receiver<UserAction>,
+    pub viewmodel_update_sender: Sender<ViewmodelUpdate>,
 }
 
 type ViewmodelUpdateStream = RefCell<Option<StreamSink<String>>>;
-type UserActionSender = RefCell<Option<Sender<(String, Serialized)>>>;
-type UserActionReceiver = RefCell<Option<Receiver<(String, Serialized)>>>;
-type ViewmodelUpdateSender = RefCell<Option<Sender<(String, Serialized)>>>;
-type ViewmodelUpdateReceiver = RefCell<Option<Receiver<(String, Serialized)>>>;
+type ViewUpdateStream = RefCell<Option<StreamSink<ViewUpdate>>>;
+type UserActionSender = RefCell<Option<Sender<UserAction>>>;
+type UserActionReceiver = RefCell<Option<Receiver<UserAction>>>;
+type ViewmodelUpdateSender = RefCell<Option<Sender<ViewmodelUpdate>>>;
+type ViewmodelUpdateReceiver = RefCell<Option<Receiver<ViewmodelUpdate>>>;
 
 ref_thread_local! {
     // With this macro, each thread gets its own static variables instead of sharing them.
     pub static managed STARTED_FLAG: bool = false; // For Dart thread
     pub static managed VIEWMODEL: HashMap<String, Serialized> = HashMap::new(); // For Dart thread
     pub static managed VIEWMODEL_UPDATE_STREAM: ViewmodelUpdateStream = RefCell::new(None); // For Rust thread
+    pub static managed VIEW_UPDATE_STREAM: ViewUpdateStream = RefCell::new(None); // For Rust thread
     pub static managed USER_ACTION_SENDER: UserActionSender = RefCell::new(None); // For Dart thread
     pub static managed USER_ACTION_RECEIVER: UserActionReceiver = RefCell::new(None); // For Rust thread
     pub static managed VIEWMODEL_UPDATE_SENDER: ViewmodelUpdateSender= RefCell::new(None); // For Rust thread
@@ -43,6 +60,12 @@ pub fn prepare_viewmodel_update_stream(viewmodel_update_stream: StreamSink<Strin
     // Thread 1 running Rust
     let refcell = VIEWMODEL_UPDATE_STREAM.borrow_mut();
     refcell.replace(Some(viewmodel_update_stream));
+}
+
+pub fn prepare_view_update_stream(view_update_stream: StreamSink<ViewUpdate>) {
+    // Thread 1 running Rust
+    let refcell = VIEW_UPDATE_STREAM.borrow_mut();
+    refcell.replace(Some(view_update_stream));
 }
 
 pub fn prepare_channels() -> SyncReturn<RustOpaque<Mutex<EndpointsOnRustThread>>> {
@@ -86,7 +109,10 @@ pub fn send_user_action(task_address: String, serialized: Serialized) -> SyncRet
     let borrowed = refcell.borrow();
     let option = borrowed.as_ref();
     let sender = option.expect("User action sender does not exist!");
-    let user_action = (task_address, serialized);
+    let user_action = UserAction {
+        task_address,
+        serialized,
+    };
     sender.try_send(user_action).ok();
     SyncReturn(())
 }
@@ -106,7 +132,7 @@ pub fn read_viewmodel(item_address: String) -> SyncReturn<Option<Serialized>> {
     let receiver_option = receiver_refcell.replace(None);
     let mut receiver = receiver_option.expect("Viewmodel update receiver does not exist!");
     while let Ok(viewmodel_update) = receiver.try_recv() {
-        hashmap.insert(viewmodel_update.0, viewmodel_update.1);
+        hashmap.insert(viewmodel_update.item_address, viewmodel_update.serialized);
     }
     receiver_refcell.replace(Some(receiver));
     let item_option = hashmap.get(&item_address).cloned();

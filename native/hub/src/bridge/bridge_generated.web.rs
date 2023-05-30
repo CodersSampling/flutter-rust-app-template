@@ -7,6 +7,11 @@ pub fn wire_prepare_viewmodel_update_stream(port_: MessagePort) {
 }
 
 #[wasm_bindgen]
+pub fn wire_prepare_view_update_stream(port_: MessagePort) {
+    wire_prepare_view_update_stream_impl(port_)
+}
+
+#[wasm_bindgen]
 pub fn wire_prepare_channels() -> support::WireSyncReturn {
     wire_prepare_channels_impl()
 }

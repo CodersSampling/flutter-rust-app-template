@@ -7,6 +7,7 @@ use crate::data_model;
 use ref_thread_local::RefThreadLocal;
 use serde_json::json;
 use tokio::sync::RwLock;
+use tokio::task::spawn_blocking;
 
 pub async fn calculate_something(serialized: Serialized) {
     let _ = serialized;
@@ -19,7 +20,6 @@ pub async fn calculate_something(serialized: Serialized) {
     let rwlock = option.unwrap();
     let mut value = rwlock.write().await;
     *value = sample_crate::add_seven(*value);
-    println!("{:}", *value);
     // Use JSON objects for packing or unpacking whenever possible.
     // Its highly readable macros and native data manipulation methods are
     // considerably better than others.
@@ -48,7 +48,7 @@ pub async fn keep_drawing_mandelbrot() {
     let mut scale: f64 = 1.0;
     loop {
         scale *= 0.95;
-        if scale < 1e-9 {
+        if scale < 1e-7 {
             scale = 1.0
         };
         // Because drawing a mandelbrot image is
@@ -58,7 +58,7 @@ pub async fn keep_drawing_mandelbrot() {
         // In real-world async scenarios,
         // thread blocking tasks that take more than 10 milliseconds
         // are considered better to be sent to a separate thread.
-        let join_handle = tokio::task::spawn_blocking(move || {
+        let join_handle = spawn_blocking(move || {
             sample_crate::mandelbrot(
                 sample_crate::Size {
                     width: 64,
@@ -82,8 +82,7 @@ pub async fn keep_drawing_mandelbrot() {
             update_viewmodel("someItemCategory.mandelbrot", payload);
         }
         // Never use `std::thread::sleep` on the main thread
-        // because it will block the whole async runtime
-        // managed by `tokio`.
+        // because it will block the whole `tokio` async runtime.
         tokio::time::sleep(std::time::Duration::from_millis(20)).await;
     }
 }

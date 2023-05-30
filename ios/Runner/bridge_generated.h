@@ -37,6 +37,8 @@ intptr_t init_frb_dart_api_dl(void *obj);
 
 void wire_prepare_viewmodel_update_stream(int64_t port_);
 
+void wire_prepare_view_update_stream(int64_t port_);
+
 WireSyncReturn wire_prepare_channels(void);
 
 void wire_lay_endpoints_on_rust_thread(int64_t port_,
@@ -66,6 +68,7 @@ void free_WireSyncReturn(WireSyncReturn ptr);
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
     dummy_var ^= ((int64_t) (void*) wire_prepare_viewmodel_update_stream);
+    dummy_var ^= ((int64_t) (void*) wire_prepare_view_update_stream);
     dummy_var ^= ((int64_t) (void*) wire_prepare_channels);
     dummy_var ^= ((int64_t) (void*) wire_lay_endpoints_on_rust_thread);
     dummy_var ^= ((int64_t) (void*) wire_start_rust_logic);

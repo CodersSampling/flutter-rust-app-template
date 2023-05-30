@@ -1,0 +1,6 @@
+[build] # Build settings for Rust
+# target = "wasm32-unknown-unknown" # Uncomment this line if you are also targeting web.
+
+[env] # Environment variables loaded into Rust at compile time
+RUSTFLAGS = "-C target-feature=+atomics,+bulk-memory,+mutable-globals"
+SOME_LIBRARY_DIR = "" # Folder path on system

@@ -1,13 +1,13 @@
 //! This module runs the corresponding function
 //! with the received user action.
 
-use crate::bridge::api::Serialized;
+use crate::bridge::api::UserAction;
 use crate::sample_functions;
 
-pub async fn handle_user_action(user_action: (String, Serialized)) {
+pub async fn handle_user_action(user_action: UserAction) {
     // `task_address` would be something like "addressCategory.someTask"
-    let task_address = user_action.0;
-    let serialized = user_action.1;
+    let task_address = user_action.task_address;
+    let serialized = user_action.serialized;
     let layered: Vec<&str> = task_address.split('.').collect();
     if layered.is_empty() {
     } else if layered[0] == "someTaskCategory" {

@@ -1,0 +1,8 @@
+# This file is used for telling Rust-related tools
+# that folders inside `./native` are our Rust crates.
+# This also unifies `./target` output folder and
+# various Rust settings.
+# DO NOT EDIT.
+
+[workspace]
+members = ["native/*"]

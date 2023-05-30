@@ -194,6 +194,7 @@ elif sys.argv[1] == "app-naming":
     command = f"dart run change_app_package_name:main {combined}"
     os.system(command)
 
+    print("")
     print("Done! Don't forget to update description in pubspec.yaml file as well.")
 
 elif sys.argv[1] == "config-filling":
@@ -203,7 +204,7 @@ elif sys.argv[1] == "config-filling":
     print(f"Updated {filepath}")
 
     # Rust
-    filepath = "./native/.cargo/config.toml"
+    filepath = "./.cargo/config.toml"
     merge_toml_files(filepath, f"{filepath}.template")
     print(f"Updated {filepath}")
 
@@ -224,6 +225,7 @@ elif sys.argv[1] == "bridge-gen":
     command += f" -c ios/Runner/bridge_generated.h"
     command += f" -e macos/Runner/"
     command += f" --wasm"
+    command += f" --dart-decl-output ./lib/bridge/bridge_definitions.dart"
     os.system(command)
 
     filepath = "./native/hub/src/lib.rs"
@@ -241,7 +243,7 @@ elif sys.argv[1] == "bridge-gen":
 elif sys.argv[1] == "template-update":
     command = "git remote rm template"
     os.system(command)
-    command = "git remote add template https://github.com/cunarist/app-template.git"
+    command = "git remote add template https://github.com/cunarist/flutter-rust-app-template.git"
     os.system(command)
     command = "git fetch --all"
     os.system(command)
@@ -253,24 +255,16 @@ elif sys.argv[1] == "code-quality":
     os.system(command)
     command = "dart fix --apply"
     os.system(command)
-    path = "./native"
-    os.chdir(path)
-    command = "cargo clippy --fix --allow-dirty"
+    command = "cargo clippy --release --fix --allow-dirty"
     os.system(command)
 
 elif sys.argv[1] == "size-check":
-    command = "cargo install cargo-bloat"
-    os.system(command)
-    path = "./native"
-    os.chdir(path)
     command = "cargo bloat --release -n 50"
     os.system(command)
     if len(sys.argv) == 2:
         print("")
         print("Platform option is not provided.")
     else:
-        path = ".."
-        os.chdir(path)
         command = f"flutter build {sys.argv[2]} --analyze-size"
         os.system(command)
 
@@ -327,13 +321,14 @@ elif sys.argv[1] == "translation":
     language_strings = [" " * 8 + f"<string>{l}</string>" for l in languages]
     language_strings.insert(0, " " * 4 + "<array>")
     language_strings.append(" " * 4 + "</array>")
-    print(language_strings)
     lines = lines[:array_start_line] + language_strings + lines[array_start_line:]
     final_text = "\n".join(lines)
 
     filepath = "./ios/Runner/Info.plist"
     with open(filepath, mode="w", encoding="utf8") as file:
         file.write(final_text)
+
+    print("Applied language configurations from `./assets/translations.csv`")
 
 elif sys.argv[1] == "serve-web":
     command = "dart run flutter_rust_bridge:serve"

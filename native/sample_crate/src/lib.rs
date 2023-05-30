@@ -1,6 +1,7 @@
-///! Mandelbrot is copied and modified from
-///! https://github.com/ProgrammingRust/mandelbrot/blob/task-queue/src/main.rs and
-///! https://github.com/Ducolnd/rust-mandelbrot/blob/master/src/main.rs
+//! Mandelbrot is copied and modified from
+//! https://github.com/ProgrammingRust/mandelbrot/blob/task-queue/src/main.rs and
+//! https://github.com/Ducolnd/rust-mandelbrot/blob/master/src/main.rs
+
 use anyhow::*;
 use image::codecs::png::PngEncoder;
 use image::*;

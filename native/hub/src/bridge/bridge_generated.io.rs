@@ -7,6 +7,11 @@ pub extern "C" fn wire_prepare_viewmodel_update_stream(port_: i64) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_prepare_view_update_stream(port_: i64) {
+    wire_prepare_view_update_stream_impl(port_)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_prepare_channels() -> support::WireSyncReturn {
     wire_prepare_channels_impl()
 }

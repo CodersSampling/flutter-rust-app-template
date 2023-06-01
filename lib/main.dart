@@ -7,9 +7,8 @@ import 'app.dart';
 import 'constants.dart';
 import 'bridge/wrapper.dart';
 
-/// There are 2 threads behind this app, one for Dart and one for Rust.
-/// This `main` function is the entry point for the Dart logic,
-/// which occupies one of those 2 threads.
+/// Dart operates within a single thread, while Rust has multiple threads.
+/// This `main` function is the entry point for the Dart logic.
 void main() async {
   // Make the Rust side ready.
   await organizeRustRelatedThings();

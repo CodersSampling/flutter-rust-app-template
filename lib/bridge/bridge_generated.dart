@@ -54,10 +54,10 @@ class BridgeImpl implements Bridge {
         argNames: [],
       );
 
-  MutexEndpointsOnRustThread prepareChannels({dynamic hint}) {
+  void prepareChannels({dynamic hint}) {
     return _platform.executeSync(FlutterRustBridgeSyncTask(
       callFfi: () => _platform.inner.wire_prepare_channels(),
-      parseSuccessData: _wire2api_MutexEndpointsOnRustThread,
+      parseSuccessData: _wire2api_unit,
       constMeta: kPrepareChannelsConstMeta,
       argValues: [],
       hint: hint,
@@ -68,25 +68,6 @@ class BridgeImpl implements Bridge {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "prepare_channels",
         argNames: [],
-      );
-
-  Future<void> layEndpointsOnRustThread(
-      {required MutexEndpointsOnRustThread rustOpaque, dynamic hint}) {
-    var arg0 = _platform.api2wire_MutexEndpointsOnRustThread(rustOpaque);
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) =>
-          _platform.inner.wire_lay_endpoints_on_rust_thread(port_, arg0),
-      parseSuccessData: _wire2api_unit,
-      constMeta: kLayEndpointsOnRustThreadConstMeta,
-      argValues: [rustOpaque],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kLayEndpointsOnRustThreadConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "lay_endpoints_on_rust_thread",
-        argNames: ["rustOpaque"],
       );
 
   Future<void> startRustLogic({dynamic hint}) {
@@ -159,21 +140,10 @@ class BridgeImpl implements Bridge {
         argNames: ["itemAddress"],
       );
 
-  DropFnType get dropOpaqueMutexEndpointsOnRustThread =>
-      _platform.inner.drop_opaque_MutexEndpointsOnRustThread;
-  ShareFnType get shareOpaqueMutexEndpointsOnRustThread =>
-      _platform.inner.share_opaque_MutexEndpointsOnRustThread;
-  OpaqueTypeFinalizer get MutexEndpointsOnRustThreadFinalizer =>
-      _platform.MutexEndpointsOnRustThreadFinalizer;
-
   void dispose() {
     _platform.dispose();
   }
 // Section: wire2api
-
-  MutexEndpointsOnRustThread _wire2api_MutexEndpointsOnRustThread(dynamic raw) {
-    return MutexEndpointsOnRustThread.fromRaw(raw[0], raw[1], this);
-  }
 
   String _wire2api_String(dynamic raw) {
     return raw as String;

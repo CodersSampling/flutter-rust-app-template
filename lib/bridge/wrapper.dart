@@ -20,9 +20,7 @@ Future<void> organizeRustRelatedThings() async {
     api.cleanViewmodel();
     return true;
   }());
-  var endpointsOnRustThread = api.prepareChannels();
-  endpointsOnRustThread.move = true;
-  await api.layEndpointsOnRustThread(rustOpaque: endpointsOnRustThread);
+  api.prepareChannels();
   var viewmodelUpdateStream = api.prepareViewmodelUpdateStream();
   viewmodelUpdateStream.listen((event) {
     viewmodelUpdateBroadcaster.add(event);

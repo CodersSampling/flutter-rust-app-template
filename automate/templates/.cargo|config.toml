@@ -1,0 +1,5 @@
+[build] # Build settings for Rust
+# target = "aarch64-linux-android"
+
+[env] # Environment variables loaded into Rust at compile time
+SOME_LIBRARY_DIR = "" # Folder path on system

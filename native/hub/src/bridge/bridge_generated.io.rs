@@ -17,14 +17,6 @@ pub extern "C" fn wire_prepare_channels() -> support::WireSyncReturn {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_lay_endpoints_on_rust_thread(
-    port_: i64,
-    rust_opaque: wire_MutexEndpointsOnRustThread,
-) {
-    wire_lay_endpoints_on_rust_thread_impl(port_, rust_opaque)
-}
-
-#[no_mangle]
 pub extern "C" fn wire_start_rust_logic(port_: i64) {
     wire_start_rust_logic_impl(port_)
 }
@@ -52,11 +44,6 @@ pub extern "C" fn wire_read_viewmodel(
 // Section: allocate functions
 
 #[no_mangle]
-pub extern "C" fn new_MutexEndpointsOnRustThread() -> wire_MutexEndpointsOnRustThread {
-    wire_MutexEndpointsOnRustThread::new_with_null_ptr()
-}
-
-#[no_mangle]
 pub extern "C" fn new_box_autoadd_serialized_0() -> *mut wire_Serialized {
     support::new_leak_box_ptr(wire_Serialized::new_with_null_ptr())
 }
@@ -72,28 +59,8 @@ pub extern "C" fn new_uint_8_list_0(len: i32) -> *mut wire_uint_8_list {
 
 // Section: related functions
 
-#[no_mangle]
-pub extern "C" fn drop_opaque_MutexEndpointsOnRustThread(ptr: *const c_void) {
-    unsafe {
-        Arc::<Mutex<EndpointsOnRustThread>>::decrement_strong_count(ptr as _);
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn share_opaque_MutexEndpointsOnRustThread(ptr: *const c_void) -> *const c_void {
-    unsafe {
-        Arc::<Mutex<EndpointsOnRustThread>>::increment_strong_count(ptr as _);
-        ptr
-    }
-}
-
 // Section: impl Wire2Api
 
-impl Wire2Api<RustOpaque<Mutex<EndpointsOnRustThread>>> for wire_MutexEndpointsOnRustThread {
-    fn wire2api(self) -> RustOpaque<Mutex<EndpointsOnRustThread>> {
-        unsafe { support::opaque_from_dart(self.ptr as _) }
-    }
-}
 impl Wire2Api<String> for *mut wire_uint_8_list {
     fn wire2api(self) -> String {
         let vec: Vec<u8> = self.wire2api();
@@ -127,12 +94,6 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_MutexEndpointsOnRustThread {
-    ptr: *const core::ffi::c_void,
-}
-
-#[repr(C)]
-#[derive(Clone)]
 pub struct wire_Serialized {
     bytes: *mut wire_uint_8_list,
     formula: *mut wire_uint_8_list,
@@ -154,14 +115,6 @@ pub trait NewWithNullPtr {
 impl<T> NewWithNullPtr for *mut T {
     fn new_with_null_ptr() -> Self {
         std::ptr::null_mut()
-    }
-}
-
-impl NewWithNullPtr for wire_MutexEndpointsOnRustThread {
-    fn new_with_null_ptr() -> Self {
-        Self {
-            ptr: core::ptr::null(),
-        }
     }
 }
 

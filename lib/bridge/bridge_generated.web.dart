@@ -21,11 +21,6 @@ class BridgePlatform extends FlutterRustBridgeBase<BridgeWire>
 // Section: api2wire
 
   @protected
-  Object api2wire_MutexEndpointsOnRustThread(MutexEndpointsOnRustThread raw) {
-    return raw.shareOrMove();
-  }
-
-  @protected
   String api2wire_String(String raw) {
     return raw;
   }
@@ -45,11 +40,6 @@ class BridgePlatform extends FlutterRustBridgeBase<BridgeWire>
     return raw;
   }
 // Section: finalizer
-
-  late final Finalizer<PlatformPointer> _MutexEndpointsOnRustThreadFinalizer =
-      Finalizer<PlatformPointer>(inner.drop_opaque_MutexEndpointsOnRustThread);
-  Finalizer<PlatformPointer> get MutexEndpointsOnRustThreadFinalizer =>
-      _MutexEndpointsOnRustThreadFinalizer;
 }
 
 // Section: WASM wire module
@@ -68,10 +58,7 @@ class BridgeWasmModule implements WasmModule {
   external dynamic /* void */ wire_prepare_view_update_stream(
       NativePortType port_);
 
-  external dynamic /* Object */ wire_prepare_channels();
-
-  external dynamic /* void */ wire_lay_endpoints_on_rust_thread(
-      NativePortType port_, Object rust_opaque);
+  external dynamic /* void */ wire_prepare_channels();
 
   external dynamic /* void */ wire_start_rust_logic(NativePortType port_);
 
@@ -82,10 +69,6 @@ class BridgeWasmModule implements WasmModule {
 
   external dynamic /* List<dynamic>? */ wire_read_viewmodel(
       String item_address);
-
-  external dynamic /*  */ drop_opaque_MutexEndpointsOnRustThread(ptr);
-
-  external int /* *const c_void */ share_opaque_MutexEndpointsOnRustThread(ptr);
 }
 
 // Section: WASM wire connector
@@ -100,12 +83,8 @@ class BridgeWire extends FlutterRustBridgeWasmWireBase<BridgeWasmModule> {
   void wire_prepare_view_update_stream(NativePortType port_) =>
       wasmModule.wire_prepare_view_update_stream(port_);
 
-  dynamic /* Object */ wire_prepare_channels() =>
+  dynamic /* void */ wire_prepare_channels() =>
       wasmModule.wire_prepare_channels();
-
-  void wire_lay_endpoints_on_rust_thread(
-          NativePortType port_, Object rust_opaque) =>
-      wasmModule.wire_lay_endpoints_on_rust_thread(port_, rust_opaque);
 
   void wire_start_rust_logic(NativePortType port_) =>
       wasmModule.wire_start_rust_logic(port_);
@@ -119,10 +98,4 @@ class BridgeWire extends FlutterRustBridgeWasmWireBase<BridgeWasmModule> {
 
   dynamic /* List<dynamic>? */ wire_read_viewmodel(String item_address) =>
       wasmModule.wire_read_viewmodel(item_address);
-
-  dynamic /*  */ drop_opaque_MutexEndpointsOnRustThread(ptr) =>
-      wasmModule.drop_opaque_MutexEndpointsOnRustThread(ptr);
-
-  int /* *const c_void */ share_opaque_MutexEndpointsOnRustThread(ptr) =>
-      wasmModule.share_opaque_MutexEndpointsOnRustThread(ptr);
 }

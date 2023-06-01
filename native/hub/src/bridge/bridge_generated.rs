@@ -53,22 +53,6 @@ fn wire_prepare_channels_impl() -> support::WireSyncReturn {
         move || Ok(prepare_channels()),
     )
 }
-fn wire_lay_endpoints_on_rust_thread_impl(
-    port_: MessagePort,
-    rust_opaque: impl Wire2Api<RustOpaque<Mutex<EndpointsOnRustThread>>> + UnwindSafe,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "lay_endpoints_on_rust_thread",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || {
-            let api_rust_opaque = rust_opaque.wire2api();
-            move |task_callback| Ok(lay_endpoints_on_rust_thread(api_rust_opaque))
-        },
-    )
-}
 fn wire_start_rust_logic_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {

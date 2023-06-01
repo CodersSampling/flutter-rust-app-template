@@ -1,11 +1,10 @@
-use flutter_rust_bridge::RustOpaque;
 use flutter_rust_bridge::StreamSink;
 use flutter_rust_bridge::SyncReturn;
-use ref_thread_local::ref_thread_local;
-use ref_thread_local::RefThreadLocal;
+use lazy_static::lazy_static;
 use std::cell::RefCell;
 use std::collections::HashMap;
-pub use std::sync::Mutex;
+use std::sync::Arc;
+use std::sync::Mutex;
 use tokio::sync::mpsc::channel;
 use tokio::sync::mpsc::Receiver;
 use tokio::sync::mpsc::Sender;
@@ -16,6 +15,7 @@ pub struct Serialized {
     pub formula: String,
 }
 
+#[derive(Clone)]
 pub struct ViewUpdate {
     pub display_address: String,
     pub serialized: Serialized,
@@ -31,71 +31,72 @@ pub struct UserAction {
     pub serialized: Serialized,
 }
 
-#[derive(Debug)]
-pub struct EndpointsOnRustThread {
-    pub user_action_receiver: Receiver<UserAction>,
-    pub viewmodel_update_sender: Sender<ViewmodelUpdate>,
+type Cell<T> = RefCell<Option<T>>;
+type SharedCell<T> = Arc<Mutex<Cell<T>>>;
+
+type Viewmodel = HashMap<String, Serialized>;
+type ViewmodelUpdateStream = StreamSink<String>;
+type ViewUpdateStream = StreamSink<ViewUpdate>;
+type UserActionSender = Sender<UserAction>;
+type UserActionReceiver = Receiver<UserAction>;
+type ViewmodelUpdateSender = Sender<ViewmodelUpdate>;
+type ViewmodelUpdateReceiver = Receiver<ViewmodelUpdate>;
+
+// For thread 0 running Dart
+thread_local! {
+    pub static VIEWMODEL: Cell<Viewmodel> = RefCell::new(Some(HashMap::new()));
+    pub static USER_ACTION_SENDER: Cell<UserActionSender> = RefCell::new(None);
+    pub static VIEWMODEL_UPDATE_RECEIVER: Cell<ViewmodelUpdateReceiver> =RefCell::new(None);
+
 }
 
-type ViewmodelUpdateStream = RefCell<Option<StreamSink<String>>>;
-type ViewUpdateStream = RefCell<Option<StreamSink<ViewUpdate>>>;
-type UserActionSender = RefCell<Option<Sender<UserAction>>>;
-type UserActionReceiver = RefCell<Option<Receiver<UserAction>>>;
-type ViewmodelUpdateSender = RefCell<Option<Sender<ViewmodelUpdate>>>;
-type ViewmodelUpdateReceiver = RefCell<Option<Receiver<ViewmodelUpdate>>>;
+// For thread 1~N running Rust
+thread_local! {
+    pub static ARE_CHANNELS_READY: RefCell<bool> = RefCell::new(false);
+    pub static VIEWMODEL_UPDATE_SENDER: Cell<ViewmodelUpdateSender>= RefCell::new(None);
+    pub static VIEWMODEL_UPDATE_STREAM: Cell<ViewmodelUpdateStream> = RefCell::new(None);
+    pub static VIEW_UPDATE_STREAM: Cell<ViewUpdateStream> = RefCell::new(None);
+}
 
-ref_thread_local! {
-    // With this macro, each thread gets its own static variables instead of sharing them.
-    pub static managed STARTED_FLAG: bool = false; // For Dart thread
-    pub static managed VIEWMODEL: HashMap<String, Serialized> = HashMap::new(); // For Dart thread
-    pub static managed VIEWMODEL_UPDATE_STREAM: ViewmodelUpdateStream = RefCell::new(None); // For Rust thread
-    pub static managed VIEW_UPDATE_STREAM: ViewUpdateStream = RefCell::new(None); // For Rust thread
-    pub static managed USER_ACTION_SENDER: UserActionSender = RefCell::new(None); // For Dart thread
-    pub static managed USER_ACTION_RECEIVER: UserActionReceiver = RefCell::new(None); // For Rust thread
-    pub static managed VIEWMODEL_UPDATE_SENDER: ViewmodelUpdateSender= RefCell::new(None); // For Rust thread
-    pub static managed VIEWMODEL_UPDATE_RECEIVER: ViewmodelUpdateReceiver =RefCell::new( None); // For Dart thread
+// For sharing between threads
+lazy_static! {
+    pub static ref VIEWMODEL_UPDATE_STREAM_SHARED: SharedCell<ViewmodelUpdateStream> =
+        Arc::new(Mutex::new(RefCell::new(None)));
+    pub static ref VIEW_UPDATE_STREAM_SHARED: SharedCell<ViewUpdateStream> =
+        Arc::new(Mutex::new(RefCell::new(None)));
+    pub static ref USER_ACTION_RECEIVER_SHARED: SharedCell<UserActionReceiver> =
+        Arc::new(Mutex::new(RefCell::new(None)));
+    pub static ref VIEWMODEL_UPDATE_SENDER_SHARED: SharedCell<ViewmodelUpdateSender> =
+        Arc::new(Mutex::new(RefCell::new(None)));
 }
 
 pub fn prepare_viewmodel_update_stream(viewmodel_update_stream: StreamSink<String>) {
     // Thread 1 running Rust
-    let refcell = VIEWMODEL_UPDATE_STREAM.borrow_mut();
-    refcell.replace(Some(viewmodel_update_stream));
+    let cell = VIEWMODEL_UPDATE_STREAM_SHARED.lock().unwrap();
+    cell.replace(Some(viewmodel_update_stream));
 }
 
 pub fn prepare_view_update_stream(view_update_stream: StreamSink<ViewUpdate>) {
     // Thread 1 running Rust
-    let refcell = VIEW_UPDATE_STREAM.borrow_mut();
-    refcell.replace(Some(view_update_stream));
+    let cell = VIEW_UPDATE_STREAM_SHARED.lock().unwrap();
+    cell.replace(Some(view_update_stream));
 }
 
-pub fn prepare_channels() -> SyncReturn<RustOpaque<Mutex<EndpointsOnRustThread>>> {
+pub fn prepare_channels() -> SyncReturn<()> {
     // Thread 0 running Dart
     let (user_action_sender, user_action_receiver) = channel(1024);
-    let refcell = USER_ACTION_SENDER.borrow();
-    refcell.replace(Some(user_action_sender));
+    USER_ACTION_SENDER.with(move |inner| {
+        inner.replace(Some(user_action_sender));
+    });
+    let cell = USER_ACTION_RECEIVER_SHARED.lock().unwrap();
+    cell.replace(Some(user_action_receiver));
     let (viewmodel_update_sender, viewmodel_update_receiver) = channel(1024);
-    let refcell = VIEWMODEL_UPDATE_RECEIVER.borrow();
-    refcell.replace(Some(viewmodel_update_receiver));
-    let endpoints_on_rust_thread = EndpointsOnRustThread {
-        user_action_receiver,
-        viewmodel_update_sender,
-    };
-    SyncReturn(RustOpaque::new(Mutex::new(endpoints_on_rust_thread)))
-}
-
-pub fn lay_endpoints_on_rust_thread(rust_opaque: RustOpaque<Mutex<EndpointsOnRustThread>>) {
-    // Thread 1 running Rust
-    let result = rust_opaque.try_unwrap();
-    let mutex = result.expect("Failed to unwrap received `RustOpaque` object!");
-    let result = mutex.into_inner();
-    let endpoints_at_dart_thread =
-        result.expect("Data inside received `RustOpaque` object is not valid!");
-    let inner = endpoints_at_dart_thread.user_action_receiver;
-    let refcell = USER_ACTION_RECEIVER.borrow();
-    refcell.replace(Some(inner));
-    let inner = endpoints_at_dart_thread.viewmodel_update_sender;
-    let refcell = VIEWMODEL_UPDATE_SENDER.borrow();
-    refcell.replace(Some(inner));
+    VIEWMODEL_UPDATE_RECEIVER.with(move |inner| {
+        inner.replace(Some(viewmodel_update_receiver));
+    });
+    let cell = VIEWMODEL_UPDATE_SENDER_SHARED.lock().unwrap();
+    cell.replace(Some(viewmodel_update_sender));
+    SyncReturn(())
 }
 
 pub fn start_rust_logic() {
@@ -105,36 +106,41 @@ pub fn start_rust_logic() {
 
 pub fn send_user_action(task_address: String, serialized: Serialized) -> SyncReturn<()> {
     // Thread 0 running Dart
-    let refcell = USER_ACTION_SENDER.borrow();
-    let borrowed = refcell.borrow();
-    let option = borrowed.as_ref();
-    let sender = option.expect("User action sender does not exist!");
-    let user_action = UserAction {
-        task_address,
-        serialized,
-    };
-    sender.try_send(user_action).ok();
+    USER_ACTION_SENDER.with(move |inner| {
+        let borrowed = inner.borrow();
+        let sender = borrowed.as_ref().unwrap();
+        let user_action = UserAction {
+            task_address,
+            serialized,
+        };
+        sender.try_send(user_action).ok();
+    });
     SyncReturn(())
 }
 
 /// This function is meant to be called when Dart's hot restart is triggered in debug mode.
 pub fn clean_viewmodel() -> SyncReturn<()> {
     // Thread 0 running Dart
-    let mut hashmap = VIEWMODEL.borrow_mut();
-    *hashmap = HashMap::new();
+    VIEWMODEL.with(move |inner| {
+        inner.replace(Some(HashMap::new()));
+    });
     SyncReturn(())
 }
 
 pub fn read_viewmodel(item_address: String) -> SyncReturn<Option<Serialized>> {
     // Thread 0 running Dart
-    let mut hashmap = VIEWMODEL.borrow_mut();
-    let receiver_refcell = VIEWMODEL_UPDATE_RECEIVER.borrow();
-    let receiver_option = receiver_refcell.replace(None);
-    let mut receiver = receiver_option.expect("Viewmodel update receiver does not exist!");
-    while let Ok(viewmodel_update) = receiver.try_recv() {
-        hashmap.insert(viewmodel_update.item_address, viewmodel_update.serialized);
-    }
-    receiver_refcell.replace(Some(receiver));
-    let item_option = hashmap.get(&item_address).cloned();
+    let item_option = VIEWMODEL_UPDATE_RECEIVER.with(move |inner| {
+        let receiver_cell = inner;
+        let mut receiver = receiver_cell.replace(None).unwrap();
+        VIEWMODEL.with(move |inner| {
+            let mut borrowed = inner.borrow_mut();
+            let hashmap = borrowed.as_mut().unwrap();
+            while let Ok(viewmodel_update) = receiver.try_recv() {
+                hashmap.insert(viewmodel_update.item_address, viewmodel_update.serialized);
+            }
+            receiver_cell.replace(Some(receiver));
+            hashmap.get(&item_address).cloned()
+        })
+    });
     SyncReturn(item_option)
 }

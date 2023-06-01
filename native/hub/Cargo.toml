@@ -12,8 +12,13 @@ flutter_rust_bridge = { version = "1.77.1", features = [
     "worker-single",
     "zero-copy",
 ] }
-tokio = { version = "1.28.1", features = ["rt", "sync", "macros", "time"] }
-ref_thread_local = "0.1.1"
+tokio = { version = "1.28.1", features = [
+    "rt-multi-thread",
+    "sync",
+    "macros",
+    "time",
+] }
+lazy_static = "1.4.0"
 serde_json = "1.0.93"
 rmp-serde = "1.1.1"
 # In workspace

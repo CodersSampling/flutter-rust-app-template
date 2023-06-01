@@ -4,11 +4,34 @@
 //! DO NOT EDIT.
 
 use api::Serialized;
-use ref_thread_local::RefThreadLocal;
 use tokio::sync::mpsc::Receiver;
 
 pub mod api;
 mod bridge_generated;
+
+fn check_and_initialize() {
+    api::ARE_CHANNELS_READY.with(|inner| {
+        let mut are_channels_ready = inner.borrow_mut();
+        if !*are_channels_ready {
+            api::VIEWMODEL_UPDATE_SENDER.with(|inner| {
+                let cell = api::VIEWMODEL_UPDATE_SENDER_SHARED.lock().unwrap();
+                let new = cell.borrow().as_ref().unwrap().clone();
+                inner.replace(Some(new));
+            });
+            api::VIEWMODEL_UPDATE_STREAM.with(|inner| {
+                let cell = api::VIEWMODEL_UPDATE_STREAM_SHARED.lock().unwrap();
+                let new = cell.borrow().as_ref().unwrap().clone();
+                inner.replace(Some(new));
+            });
+            api::VIEW_UPDATE_STREAM.with(|inner| {
+                let cell = api::VIEW_UPDATE_STREAM_SHARED.lock().unwrap();
+                let new = cell.borrow().as_ref().unwrap().clone();
+                inner.replace(Some(new));
+            });
+            *are_channels_ready = true;
+        }
+    });
+}
 
 /// Updating the viewmodel will
 /// automatically send a stream signal to Flutter widgets
@@ -18,22 +41,21 @@ mod bridge_generated;
 /// it will be copied in memory when being read from the Dart side.
 #[allow(dead_code)]
 pub fn update_viewmodel(item_address: &str, serialized: Serialized) {
-    let refcell = api::VIEWMODEL_UPDATE_SENDER.borrow();
-    let borrowed = refcell.borrow();
-    let option = borrowed.as_ref();
-    if let Some(sender) = option {
+    check_and_initialize();
+    api::VIEWMODEL_UPDATE_SENDER.with(|inner| {
+        let borrowed = inner.borrow();
+        let sender = borrowed.as_ref().unwrap();
         let viewmodel_update = api::ViewmodelUpdate {
             item_address: String::from(item_address),
             serialized,
         };
         sender.try_send(viewmodel_update).ok();
-    }
-    let refcell = api::VIEWMODEL_UPDATE_STREAM.borrow();
-    let borrowed = refcell.borrow();
-    let option = borrowed.as_ref();
-    if let Some(stream) = option {
+    });
+    api::VIEWMODEL_UPDATE_STREAM.with(|inner| {
+        let borrowed = inner.borrow();
+        let stream = borrowed.as_ref().unwrap();
         stream.add(item_address.to_string());
-    }
+    });
 }
 
 /// This function should only be used for
@@ -47,6 +69,7 @@ pub fn update_viewmodel(item_address: &str, serialized: Serialized) {
 /// you should use `update_viewmodel` in most cases.
 #[allow(dead_code)]
 pub fn update_view(display_address: &str, serialized: Serialized) {
+    check_and_initialize();
     #[cfg(debug_assertions)]
     if serialized.bytes.len() < 2_usize.pow(10) {
         println!(concat!(
@@ -55,22 +78,21 @@ pub fn update_view(display_address: &str, serialized: Serialized) {
         ));
         return;
     }
-    let view_update = api::ViewUpdate {
-        display_address: String::from(display_address),
-        serialized,
-    };
-    let refcell = api::VIEW_UPDATE_STREAM.borrow();
-    let borrowed = refcell.borrow();
-    let option = borrowed.as_ref();
-    if let Some(stream) = option {
+    api::VIEW_UPDATE_STREAM.with(|inner| {
+        let borrowed = inner.borrow();
+        let stream = borrowed.as_ref().unwrap();
+        let view_update = api::ViewUpdate {
+            display_address: String::from(display_address),
+            serialized,
+        };
         stream.add(view_update);
-    }
+    });
 }
 
 /// This function is expected to be used only once
 /// during the initialization of the Rust logic.
 pub fn get_user_action_receiver() -> Receiver<api::UserAction> {
-    let refcell = api::USER_ACTION_RECEIVER.borrow();
-    let option = refcell.replace(None);
-    option.expect("User action receiver does not exist!")
+    let cell = api::USER_ACTION_RECEIVER_SHARED.lock().unwrap();
+    let option = cell.replace(None);
+    option.unwrap()
 }

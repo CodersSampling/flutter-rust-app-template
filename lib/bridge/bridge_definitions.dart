@@ -19,14 +19,9 @@ abstract class Bridge {
 
   FlutterRustBridgeTaskConstMeta get kPrepareViewUpdateStreamConstMeta;
 
-  MutexEndpointsOnRustThread prepareChannels({dynamic hint});
+  void prepareChannels({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kPrepareChannelsConstMeta;
-
-  Future<void> layEndpointsOnRustThread(
-      {required MutexEndpointsOnRustThread rustOpaque, dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kLayEndpointsOnRustThreadConstMeta;
 
   Future<void> startRustLogic({dynamic hint});
 
@@ -47,26 +42,6 @@ abstract class Bridge {
   Serialized? readViewmodel({required String itemAddress, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kReadViewmodelConstMeta;
-
-  DropFnType get dropOpaqueMutexEndpointsOnRustThread;
-  ShareFnType get shareOpaqueMutexEndpointsOnRustThread;
-  OpaqueTypeFinalizer get MutexEndpointsOnRustThreadFinalizer;
-}
-
-@sealed
-class MutexEndpointsOnRustThread extends FrbOpaque {
-  final Bridge bridge;
-  MutexEndpointsOnRustThread.fromRaw(int ptr, int size, this.bridge)
-      : super.unsafe(ptr, size);
-  @override
-  DropFnType get dropFn => bridge.dropOpaqueMutexEndpointsOnRustThread;
-
-  @override
-  ShareFnType get shareFn => bridge.shareOpaqueMutexEndpointsOnRustThread;
-
-  @override
-  OpaqueTypeFinalizer get staticFinalizer =>
-      bridge.MutexEndpointsOnRustThreadFinalizer;
 }
 
 class Serialized {

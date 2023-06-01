@@ -198,20 +198,25 @@ elif sys.argv[1] == "app-naming":
     print("Done! Don't forget to update description in pubspec.yaml file as well.")
 
 elif sys.argv[1] == "config-filling":
-    # Android
-    filepath = "./android/local.properties"
-    merge_properties_files(filepath, f"{filepath}.template")
-    print(f"Updated {filepath}")
+    template_path = "./automate/templates/"
+    for template_name in os.listdir(template_path):
+        target_path = template_name.replace("|", "/")
+        updated = False
 
-    # Rust
-    filepath = "./.cargo/config.toml"
-    merge_toml_files(filepath, f"{filepath}.template")
-    print(f"Updated {filepath}")
+        if template_name.endswith(".json"):
+            merge_json_files(target_path, f"{template_path}/{template_name}")
+            updated = True
+        elif template_name.endswith(".toml"):
+            merge_toml_files(target_path, f"{template_path}/{template_name}")
+            updated = True
+        elif template_name.endswith(".properties"):
+            merge_properties_files(target_path, f"{template_path}/{template_name}")
+            updated = True
 
-    # Visual Studio Code
-    filepath = "./.vscode/settings.json"
-    merge_json_files(filepath, f"{filepath}.template")
-    print(f"Updated {filepath}")
+        if updated:
+            print(f"`{target_path}`: Updated")
+        else:
+            print(f"`{target_path}`: File type is not supported")
 
     print("")
     print("Now go ahead and manually fill in those files!")

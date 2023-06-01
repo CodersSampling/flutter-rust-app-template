@@ -18,14 +18,6 @@ class BridgePlatform extends FlutterRustBridgeBase<BridgeWire> {
 // Section: api2wire
 
   @protected
-  wire_MutexEndpointsOnRustThread api2wire_MutexEndpointsOnRustThread(
-      MutexEndpointsOnRustThread raw) {
-    final ptr = inner.new_MutexEndpointsOnRustThread();
-    _api_fill_to_wire_MutexEndpointsOnRustThread(raw, ptr);
-    return ptr;
-  }
-
-  @protected
   ffi.Pointer<wire_uint_8_list> api2wire_String(String raw) {
     return api2wire_uint_8_list(utf8.encoder.convert(raw));
   }
@@ -45,17 +37,7 @@ class BridgePlatform extends FlutterRustBridgeBase<BridgeWire> {
   }
 // Section: finalizer
 
-  late final OpaqueTypeFinalizer _MutexEndpointsOnRustThreadFinalizer =
-      OpaqueTypeFinalizer(inner._drop_opaque_MutexEndpointsOnRustThreadPtr);
-  OpaqueTypeFinalizer get MutexEndpointsOnRustThreadFinalizer =>
-      _MutexEndpointsOnRustThreadFinalizer;
 // Section: api_fill_to_wire
-
-  void _api_fill_to_wire_MutexEndpointsOnRustThread(
-      MutexEndpointsOnRustThread apiObj,
-      wire_MutexEndpointsOnRustThread wireObj) {
-    wireObj.ptr = apiObj.shareOrMove();
-  }
 
   void _api_fill_to_wire_box_autoadd_serialized(
       Serialized apiObj, ffi.Pointer<wire_Serialized> wireObj) {
@@ -203,24 +185,6 @@ class BridgeWire implements FlutterRustBridgeWireBase {
   late final _wire_prepare_channels =
       _wire_prepare_channelsPtr.asFunction<WireSyncReturn Function()>();
 
-  void wire_lay_endpoints_on_rust_thread(
-    int port_,
-    wire_MutexEndpointsOnRustThread rust_opaque,
-  ) {
-    return _wire_lay_endpoints_on_rust_thread(
-      port_,
-      rust_opaque,
-    );
-  }
-
-  late final _wire_lay_endpoints_on_rust_threadPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(ffi.Int64, wire_MutexEndpointsOnRustThread)>>(
-      'wire_lay_endpoints_on_rust_thread');
-  late final _wire_lay_endpoints_on_rust_thread =
-      _wire_lay_endpoints_on_rust_threadPtr
-          .asFunction<void Function(int, wire_MutexEndpointsOnRustThread)>();
-
   void wire_start_rust_logic(
     int port_,
   ) {
@@ -278,17 +242,6 @@ class BridgeWire implements FlutterRustBridgeWireBase {
   late final _wire_read_viewmodel = _wire_read_viewmodelPtr
       .asFunction<WireSyncReturn Function(ffi.Pointer<wire_uint_8_list>)>();
 
-  wire_MutexEndpointsOnRustThread new_MutexEndpointsOnRustThread() {
-    return _new_MutexEndpointsOnRustThread();
-  }
-
-  late final _new_MutexEndpointsOnRustThreadPtr =
-      _lookup<ffi.NativeFunction<wire_MutexEndpointsOnRustThread Function()>>(
-          'new_MutexEndpointsOnRustThread');
-  late final _new_MutexEndpointsOnRustThread =
-      _new_MutexEndpointsOnRustThreadPtr
-          .asFunction<wire_MutexEndpointsOnRustThread Function()>();
-
   ffi.Pointer<wire_Serialized> new_box_autoadd_serialized_0() {
     return _new_box_autoadd_serialized_0();
   }
@@ -314,37 +267,6 @@ class BridgeWire implements FlutterRustBridgeWireBase {
   late final _new_uint_8_list_0 = _new_uint_8_list_0Ptr
       .asFunction<ffi.Pointer<wire_uint_8_list> Function(int)>();
 
-  void drop_opaque_MutexEndpointsOnRustThread(
-    ffi.Pointer<ffi.Void> ptr,
-  ) {
-    return _drop_opaque_MutexEndpointsOnRustThread(
-      ptr,
-    );
-  }
-
-  late final _drop_opaque_MutexEndpointsOnRustThreadPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
-          'drop_opaque_MutexEndpointsOnRustThread');
-  late final _drop_opaque_MutexEndpointsOnRustThread =
-      _drop_opaque_MutexEndpointsOnRustThreadPtr
-          .asFunction<void Function(ffi.Pointer<ffi.Void>)>();
-
-  ffi.Pointer<ffi.Void> share_opaque_MutexEndpointsOnRustThread(
-    ffi.Pointer<ffi.Void> ptr,
-  ) {
-    return _share_opaque_MutexEndpointsOnRustThread(
-      ptr,
-    );
-  }
-
-  late final _share_opaque_MutexEndpointsOnRustThreadPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>>(
-      'share_opaque_MutexEndpointsOnRustThread');
-  late final _share_opaque_MutexEndpointsOnRustThread =
-      _share_opaque_MutexEndpointsOnRustThreadPtr
-          .asFunction<ffi.Pointer<ffi.Void> Function(ffi.Pointer<ffi.Void>)>();
-
   void free_WireSyncReturn(
     WireSyncReturn ptr,
   ) {
@@ -361,10 +283,6 @@ class BridgeWire implements FlutterRustBridgeWireBase {
 }
 
 final class _Dart_Handle extends ffi.Opaque {}
-
-final class wire_MutexEndpointsOnRustThread extends ffi.Struct {
-  external ffi.Pointer<ffi.Void> ptr;
-}
 
 final class wire_uint_8_list extends ffi.Struct {
   external ffi.Pointer<ffi.Uint8> ptr;

@@ -44,6 +44,9 @@ pub async fn calculate_something(serialized: Serialized) {
 pub async fn keep_drawing_mandelbrot() {
     let mut scale: f64 = 1.0;
     loop {
+        // Never use `std::thread::sleep` in `tokio`'s core threads
+        // because it will block the async runtime.
+        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
         scale *= 0.95;
         if scale < 1e-7 {
             scale = 1.0
@@ -51,7 +54,7 @@ pub async fn keep_drawing_mandelbrot() {
         // Because drawing a mandelbrot image is
         // a CPU-intensive blocking task,
         // we use `spawn_blocking` instead of `spawn`
-        // to delegate this task to a thread outside the `tokio`'s worker pool.
+        // to delegate this task to `tokio`'s blocking threads.
         // In real-world async scenarios,
         // thread blocking tasks that take more than 10 milliseconds
         // are considered better to be sent to an outer thread.
@@ -78,8 +81,41 @@ pub async fn keep_drawing_mandelbrot() {
             };
             update_viewmodel("someItemCategory.mandelbrot", payload);
         }
-        // Never use `std::thread::sleep` in `tokio`'s worker pool
-        // because it will block the async runtime.
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
+    }
+}
+
+pub async fn keep_adding_one() {
+    loop {
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+        let key = "someValueCategory.thisNumber";
+        let mut hashmap = data_model::SAMPLE_NUMBERS.write().await;
+        if !hashmap.contains_key(key) {
+            hashmap.insert(String::from(key), 0);
+        }
+        let value = *hashmap.get(key).unwrap();
+        let new_value = value + 1;
+        hashmap.insert(String::from(key), new_value);
+        // Use JSON objects for packing or unpacking whenever possible.
+        // Its highly readable macros and native data manipulation methods are
+        // considerably better than others.
+        // You can pack things like complex graph data, etc.
+        let json_value = json!({
+            "value": new_value
+        });
+        // Although we use JSON objects for packing,
+        // use MessagePack to serialize the packed data into bytes.
+        // They are cross-compatible.
+        // MessagePack provides 50~60% higher serialization performance
+        // and much smaller output size than those of JSON.
+        let payload = Serialized {
+            bytes: rmp_serde::encode::to_vec(&json_value).unwrap(),
+            formula: String::from("messagePack"),
+        };
+        // In Rust, you update the viewmodel with
+        // `update_viewmodel` function imported from module `bridge`.
+        // Because Dart widgets are bound to the viewmodel items,
+        // updating them from Rust will automatically trigger
+        // related Dart widgets to be rebuilt.
+        update_viewmodel("someItemCategory.count", payload);
     }
 }

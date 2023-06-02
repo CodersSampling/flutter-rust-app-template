@@ -12,7 +12,6 @@ Extra features added to the default Flutter template are:
 - MVVM pattern with easy viewmodel binding from Dart and viewmodel update from Rust
 - Restarting Rust logic on Dart's hot restart
 - Convenient project management using Python
-- Managing windows on desktop platforms
 - Writing user interface texts in the translation file
 
 ## Platform Support
@@ -187,7 +186,7 @@ Use async functions. Don't use `std::thread`.
 
 This template uses `tokio` to execute async functions. `tokio`'s async runtime allows millions of concurrent tasks to be run at the same time utilizing only the number of threads equivalent to the number of cores on the computer.
 
-Refer to `tokio`'s [API docs](https://docs.rs/tokio/latest/tokio/) to be more familiar with its runtime and task management system.
+Refer to `tokio`'s [API docs](https://docs.rs/tokio/latest/tokio/) to be more familiar with its async runtime and task management system.
 
 ## Internationalization
 

@@ -7,8 +7,9 @@ mod with_user_action;
 
 /// Dart operates within a single thread, while Rust has multiple threads.
 /// This `main` function is the entry point for the Rust logic.
-/// `tokio`'s runtime is used for async concurrency.
-/// Always use non-blocking async functions on the main thread, such as `tokio::time::sleep`.
+/// `tokio`'s async runtime is used for concurrency.
+/// Always use non-blocking async functions in `tokio`'s core threads,
+/// such as `tokio::time::sleep` or `tokio::fs::File::open`.
 #[tokio::main]
 async fn main() {
     // This is `tokio::sync::mpsc::Reciver` that receives user actions in an async manner.
@@ -19,6 +20,7 @@ async fn main() {
         // Repeat `tokio::task::spawn` anywhere in your code
         // if more concurrent tasks are needed.
         spawn(sample_functions::keep_drawing_mandelbrot());
+        spawn(sample_functions::keep_adding_one());
         while let Some(user_action) = user_action_receiver.recv().await {
             spawn(with_user_action::handle_user_action(user_action));
         }

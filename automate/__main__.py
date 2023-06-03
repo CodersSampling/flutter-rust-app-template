@@ -200,7 +200,7 @@ elif sys.argv[1] == "app-naming":
 elif sys.argv[1] == "config-filling":
     template_path = "./automate/templates/"
     for template_name in os.listdir(template_path):
-        target_path = template_name.replace("|", "/")
+        target_path = template_name.replace("+", "/")
         updated = False
 
         if template_name.endswith(".json"):

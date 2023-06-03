@@ -79,7 +79,7 @@ rustup target add aarch64-apple-ios-sim
 rustup target add x86_64-apple-ios
 ```
 
-Setting up your system with extra build targets can sometimes present various issues. If you encounter any problems, feel free to visit [the discussions page](https://github.com/cunarist/flutter-rust-app-template/discussions) and open a Q&A thread for assistance. You can also refer to the `flutter_rust_bridge` docs for [instructions on installing the necessary components on your system](https://cjycode.com/flutter_rust_bridge/template/setup.html).
+Preparing your system with extra build targets can sometimes present various issues. If you encounter any problems, feel free to visit [the discussions page](https://github.com/cunarist/flutter-rust-app-template/discussions) and open a Q&A thread for assistance. You can also refer to the `flutter_rust_bridge` docs for [instructions on installing the necessary components on your system](https://cjycode.com/flutter_rust_bridge/template/setup.html).
 
 # 🗃️ Setting Up
 

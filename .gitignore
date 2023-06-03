@@ -20,7 +20,7 @@
 .classpath
 .project
 .settings/
-.vscode/**
+.vscode/
 
 # Flutter repo-specific
 /bin/cache/
@@ -132,7 +132,6 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 
 # From `flutter-rust-app-template`
-.cargo/**
+.cargo/
 target/
 android/app/src/*/jniLibs/
-!**.template

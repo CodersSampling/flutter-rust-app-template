@@ -7,11 +7,6 @@ pub fn wire_prepare_viewmodel_update_stream(port_: MessagePort) {
 }
 
 #[wasm_bindgen]
-pub fn wire_prepare_view_update_stream(port_: MessagePort) {
-    wire_prepare_view_update_stream_impl(port_)
-}
-
-#[wasm_bindgen]
 pub fn wire_prepare_channels() -> support::WireSyncReturn {
     wire_prepare_channels_impl()
 }
@@ -24,16 +19,6 @@ pub fn wire_start_rust_logic(port_: MessagePort) {
 #[wasm_bindgen]
 pub fn wire_send_user_action(task_address: String, serialized: JsValue) -> support::WireSyncReturn {
     wire_send_user_action_impl(task_address, serialized)
-}
-
-#[wasm_bindgen]
-pub fn wire_clean_viewmodel() -> support::WireSyncReturn {
-    wire_clean_viewmodel_impl()
-}
-
-#[wasm_bindgen]
-pub fn wire_read_viewmodel(item_address: String) -> support::WireSyncReturn {
-    wire_read_viewmodel_impl(item_address)
 }
 
 // Section: allocate functions

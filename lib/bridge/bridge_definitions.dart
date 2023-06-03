@@ -11,13 +11,9 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class Bridge {
-  Stream<String> prepareViewmodelUpdateStream({dynamic hint});
+  Stream<ViewmodelUpdate> prepareViewmodelUpdateStream({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kPrepareViewmodelUpdateStreamConstMeta;
-
-  Stream<ViewUpdate> prepareViewUpdateStream({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kPrepareViewUpdateStreamConstMeta;
 
   void prepareChannels({dynamic hint});
 
@@ -33,15 +29,6 @@ abstract class Bridge {
       dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSendUserActionConstMeta;
-
-  /// This function is meant to be called when Dart's hot restart is triggered in debug mode.
-  void cleanViewmodel({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kCleanViewmodelConstMeta;
-
-  Serialized? readViewmodel({required String itemAddress, dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kReadViewmodelConstMeta;
 }
 
 class Serialized {
@@ -54,12 +41,12 @@ class Serialized {
   });
 }
 
-class ViewUpdate {
-  final String displayAddress;
+class ViewmodelUpdate {
+  final String itemAddress;
   final Serialized serialized;
 
-  const ViewUpdate({
-    required this.displayAddress,
+  const ViewmodelUpdate({
+    required this.itemAddress,
     required this.serialized,
   });
 }

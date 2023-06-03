@@ -33,16 +33,6 @@ fn wire_prepare_viewmodel_update_stream_impl(port_: MessagePort) {
         },
     )
 }
-fn wire_prepare_view_update_stream_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "prepare_view_update_stream",
-            port: Some(port_),
-            mode: FfiCallMode::Stream,
-        },
-        move || move |task_callback| Ok(prepare_view_update_stream(task_callback.stream_sink())),
-    )
-}
 fn wire_prepare_channels_impl() -> support::WireSyncReturn {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync(
         WrapInfo {
@@ -77,31 +67,6 @@ fn wire_send_user_action_impl(
             let api_task_address = task_address.wire2api();
             let api_serialized = serialized.wire2api();
             Ok(send_user_action(api_task_address, api_serialized))
-        },
-    )
-}
-fn wire_clean_viewmodel_impl() -> support::WireSyncReturn {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync(
-        WrapInfo {
-            debug_name: "clean_viewmodel",
-            port: None,
-            mode: FfiCallMode::Sync,
-        },
-        move || Ok(clean_viewmodel()),
-    )
-}
-fn wire_read_viewmodel_impl(
-    item_address: impl Wire2Api<String> + UnwindSafe,
-) -> support::WireSyncReturn {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync(
-        WrapInfo {
-            debug_name: "read_viewmodel",
-            port: None,
-            mode: FfiCallMode::Sync,
-        },
-        move || {
-            let api_item_address = item_address.wire2api();
-            Ok(read_viewmodel(api_item_address))
         },
     )
 }
@@ -143,16 +108,12 @@ impl support::IntoDart for Serialized {
 }
 impl support::IntoDartExceptPrimitive for Serialized {}
 
-impl support::IntoDart for ViewUpdate {
+impl support::IntoDart for ViewmodelUpdate {
     fn into_dart(self) -> support::DartAbi {
-        vec![
-            self.display_address.into_dart(),
-            self.serialized.into_dart(),
-        ]
-        .into_dart()
+        vec![self.item_address.into_dart(), self.serialized.into_dart()].into_dart()
     }
 }
-impl support::IntoDartExceptPrimitive for ViewUpdate {}
+impl support::IntoDartExceptPrimitive for ViewmodelUpdate {}
 
 // Section: executor
 

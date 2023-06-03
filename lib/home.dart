@@ -31,7 +31,7 @@ class Home extends StatelessWidget {
                 var itemAddress = 'someItemCategory.mandelbrot';
                 // Use `readViewmodel` from `bridge/wrapper.dart`
                 // to read the viewmodel item made from Rust.
-                var serialized = readViewmodel(itemAddress);
+                var serialized = viewmodel[itemAddress];
                 // If the app has just started
                 // and Rust didn't update the viewmodel item yet,
                 // the returned value will be null.
@@ -76,7 +76,7 @@ class Home extends StatelessWidget {
               }),
               builder: (context, snapshot) {
                 var itemAddress = 'someItemCategory.count';
-                var serialized = readViewmodel(itemAddress);
+                var serialized = viewmodel[itemAddress];
                 if (serialized == null) {
                   return Text('counter.blankText'.tr());
                 } else {

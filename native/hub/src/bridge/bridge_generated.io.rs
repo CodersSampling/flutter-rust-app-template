@@ -7,11 +7,6 @@ pub extern "C" fn wire_prepare_viewmodel_update_stream(port_: i64) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_prepare_view_update_stream(port_: i64) {
-    wire_prepare_view_update_stream_impl(port_)
-}
-
-#[no_mangle]
 pub extern "C" fn wire_prepare_channels() -> support::WireSyncReturn {
     wire_prepare_channels_impl()
 }
@@ -27,18 +22,6 @@ pub extern "C" fn wire_send_user_action(
     serialized: *mut wire_Serialized,
 ) -> support::WireSyncReturn {
     wire_send_user_action_impl(task_address, serialized)
-}
-
-#[no_mangle]
-pub extern "C" fn wire_clean_viewmodel() -> support::WireSyncReturn {
-    wire_clean_viewmodel_impl()
-}
-
-#[no_mangle]
-pub extern "C" fn wire_read_viewmodel(
-    item_address: *mut wire_uint_8_list,
-) -> support::WireSyncReturn {
-    wire_read_viewmodel_impl(item_address)
 }
 
 // Section: allocate functions

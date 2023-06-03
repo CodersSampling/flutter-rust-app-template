@@ -20,11 +20,11 @@ class BridgeImpl implements Bridge {
   factory BridgeImpl.wasm(FutureOr<WasmModule> module) =>
       BridgeImpl(module as ExternalLibrary);
   BridgeImpl.raw(this._platform);
-  Stream<String> prepareViewmodelUpdateStream({dynamic hint}) {
+  Stream<ViewmodelUpdate> prepareViewmodelUpdateStream({dynamic hint}) {
     return _platform.executeStream(FlutterRustBridgeTask(
       callFfi: (port_) =>
           _platform.inner.wire_prepare_viewmodel_update_stream(port_),
-      parseSuccessData: _wire2api_String,
+      parseSuccessData: _wire2api_viewmodel_update,
       constMeta: kPrepareViewmodelUpdateStreamConstMeta,
       argValues: [],
       hint: hint,
@@ -34,23 +34,6 @@ class BridgeImpl implements Bridge {
   FlutterRustBridgeTaskConstMeta get kPrepareViewmodelUpdateStreamConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "prepare_viewmodel_update_stream",
-        argNames: [],
-      );
-
-  Stream<ViewUpdate> prepareViewUpdateStream({dynamic hint}) {
-    return _platform.executeStream(FlutterRustBridgeTask(
-      callFfi: (port_) =>
-          _platform.inner.wire_prepare_view_update_stream(port_),
-      parseSuccessData: _wire2api_view_update,
-      constMeta: kPrepareViewUpdateStreamConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kPrepareViewUpdateStreamConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "prepare_view_update_stream",
         argNames: [],
       );
 
@@ -107,39 +90,6 @@ class BridgeImpl implements Bridge {
         argNames: ["taskAddress", "serialized"],
       );
 
-  void cleanViewmodel({dynamic hint}) {
-    return _platform.executeSync(FlutterRustBridgeSyncTask(
-      callFfi: () => _platform.inner.wire_clean_viewmodel(),
-      parseSuccessData: _wire2api_unit,
-      constMeta: kCleanViewmodelConstMeta,
-      argValues: [],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kCleanViewmodelConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "clean_viewmodel",
-        argNames: [],
-      );
-
-  Serialized? readViewmodel({required String itemAddress, dynamic hint}) {
-    var arg0 = _platform.api2wire_String(itemAddress);
-    return _platform.executeSync(FlutterRustBridgeSyncTask(
-      callFfi: () => _platform.inner.wire_read_viewmodel(arg0),
-      parseSuccessData: _wire2api_opt_box_autoadd_serialized,
-      constMeta: kReadViewmodelConstMeta,
-      argValues: [itemAddress],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kReadViewmodelConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "read_viewmodel",
-        argNames: ["itemAddress"],
-      );
-
   void dispose() {
     _platform.dispose();
   }
@@ -147,14 +97,6 @@ class BridgeImpl implements Bridge {
 
   String _wire2api_String(dynamic raw) {
     return raw as String;
-  }
-
-  Serialized _wire2api_box_autoadd_serialized(dynamic raw) {
-    return _wire2api_serialized(raw);
-  }
-
-  Serialized? _wire2api_opt_box_autoadd_serialized(dynamic raw) {
-    return raw == null ? null : _wire2api_box_autoadd_serialized(raw);
   }
 
   Serialized _wire2api_serialized(dynamic raw) {
@@ -179,12 +121,12 @@ class BridgeImpl implements Bridge {
     return;
   }
 
-  ViewUpdate _wire2api_view_update(dynamic raw) {
+  ViewmodelUpdate _wire2api_viewmodel_update(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 2)
       throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-    return ViewUpdate(
-      displayAddress: _wire2api_String(arr[0]),
+    return ViewmodelUpdate(
+      itemAddress: _wire2api_String(arr[0]),
       serialized: _wire2api_serialized(arr[1]),
     );
   }

@@ -161,20 +161,6 @@ class BridgeWire implements FlutterRustBridgeWireBase {
   late final _wire_prepare_viewmodel_update_stream =
       _wire_prepare_viewmodel_update_streamPtr.asFunction<void Function(int)>();
 
-  void wire_prepare_view_update_stream(
-    int port_,
-  ) {
-    return _wire_prepare_view_update_stream(
-      port_,
-    );
-  }
-
-  late final _wire_prepare_view_update_streamPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_prepare_view_update_stream');
-  late final _wire_prepare_view_update_stream =
-      _wire_prepare_view_update_streamPtr.asFunction<void Function(int)>();
-
   WireSyncReturn wire_prepare_channels() {
     return _wire_prepare_channels();
   }
@@ -216,31 +202,6 @@ class BridgeWire implements FlutterRustBridgeWireBase {
   late final _wire_send_user_action = _wire_send_user_actionPtr.asFunction<
       WireSyncReturn Function(
           ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_Serialized>)>();
-
-  WireSyncReturn wire_clean_viewmodel() {
-    return _wire_clean_viewmodel();
-  }
-
-  late final _wire_clean_viewmodelPtr =
-      _lookup<ffi.NativeFunction<WireSyncReturn Function()>>(
-          'wire_clean_viewmodel');
-  late final _wire_clean_viewmodel =
-      _wire_clean_viewmodelPtr.asFunction<WireSyncReturn Function()>();
-
-  WireSyncReturn wire_read_viewmodel(
-    ffi.Pointer<wire_uint_8_list> item_address,
-  ) {
-    return _wire_read_viewmodel(
-      item_address,
-    );
-  }
-
-  late final _wire_read_viewmodelPtr = _lookup<
-      ffi.NativeFunction<
-          WireSyncReturn Function(
-              ffi.Pointer<wire_uint_8_list>)>>('wire_read_viewmodel');
-  late final _wire_read_viewmodel = _wire_read_viewmodelPtr
-      .asFunction<WireSyncReturn Function(ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_Serialized> new_box_autoadd_serialized_0() {
     return _new_box_autoadd_serialized_0();

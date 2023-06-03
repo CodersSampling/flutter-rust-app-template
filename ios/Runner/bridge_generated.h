@@ -33,18 +33,12 @@ intptr_t init_frb_dart_api_dl(void *obj);
 
 void wire_prepare_viewmodel_update_stream(int64_t port_);
 
-void wire_prepare_view_update_stream(int64_t port_);
-
 WireSyncReturn wire_prepare_channels(void);
 
 void wire_start_rust_logic(int64_t port_);
 
 WireSyncReturn wire_send_user_action(struct wire_uint_8_list *task_address,
                                      struct wire_Serialized *serialized);
-
-WireSyncReturn wire_clean_viewmodel(void);
-
-WireSyncReturn wire_read_viewmodel(struct wire_uint_8_list *item_address);
 
 struct wire_Serialized *new_box_autoadd_serialized_0(void);
 
@@ -55,12 +49,9 @@ void free_WireSyncReturn(WireSyncReturn ptr);
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
     dummy_var ^= ((int64_t) (void*) wire_prepare_viewmodel_update_stream);
-    dummy_var ^= ((int64_t) (void*) wire_prepare_view_update_stream);
     dummy_var ^= ((int64_t) (void*) wire_prepare_channels);
     dummy_var ^= ((int64_t) (void*) wire_start_rust_logic);
     dummy_var ^= ((int64_t) (void*) wire_send_user_action);
-    dummy_var ^= ((int64_t) (void*) wire_clean_viewmodel);
-    dummy_var ^= ((int64_t) (void*) wire_read_viewmodel);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_serialized_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturn);

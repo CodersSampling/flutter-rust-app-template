@@ -6,38 +6,24 @@
 /// DO NOT EDIT.
 
 import 'dart:async';
+import 'dart:collection';
 import 'bridge_definitions.dart';
 import 'ffi.dart' if (dart.library.html) 'ffi_web.dart';
 
 export 'bridge_definitions.dart';
 
+var viewmodel = HashMap<String, Serialized>();
 var viewmodelUpdateBroadcaster = StreamController<String>.broadcast();
-var viewUpdateBroadcaster = StreamController<ViewUpdate>.broadcast();
 
 Future<void> organizeRustRelatedThings() async {
-  assert(() {
-    // In debug mode, clean up the viewmodel upon Dart's hot restart.
-    api.cleanViewmodel();
-    return true;
-  }());
   api.prepareChannels();
   var viewmodelUpdateStream = api.prepareViewmodelUpdateStream();
   viewmodelUpdateStream.listen((event) {
-    viewmodelUpdateBroadcaster.add(event);
-  });
-  var viewUpdateStream = api.prepareViewUpdateStream();
-  viewUpdateStream.listen((event) {
-    viewUpdateBroadcaster.add(event);
+    viewmodel[event.itemAddress] = event.serialized;
+    viewmodelUpdateBroadcaster.add(event.itemAddress);
   });
   await Future.delayed(const Duration(milliseconds: 100));
   api.startRustLogic();
-}
-
-Serialized? readViewmodel(String itemAddress) {
-  Serialized? serialized = api.readViewmodel(
-    itemAddress: itemAddress,
-  );
-  return serialized;
 }
 
 void sendUserAction(String taskAddress, Serialized serialized) {

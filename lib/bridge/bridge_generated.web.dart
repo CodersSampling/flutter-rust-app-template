@@ -55,20 +55,12 @@ class BridgeWasmModule implements WasmModule {
   external dynamic /* void */ wire_prepare_viewmodel_update_stream(
       NativePortType port_);
 
-  external dynamic /* void */ wire_prepare_view_update_stream(
-      NativePortType port_);
-
   external dynamic /* void */ wire_prepare_channels();
 
   external dynamic /* void */ wire_start_rust_logic(NativePortType port_);
 
   external dynamic /* void */ wire_send_user_action(
       String task_address, List<dynamic> serialized);
-
-  external dynamic /* void */ wire_clean_viewmodel();
-
-  external dynamic /* List<dynamic>? */ wire_read_viewmodel(
-      String item_address);
 }
 
 // Section: WASM wire connector
@@ -80,9 +72,6 @@ class BridgeWire extends FlutterRustBridgeWasmWireBase<BridgeWasmModule> {
   void wire_prepare_viewmodel_update_stream(NativePortType port_) =>
       wasmModule.wire_prepare_viewmodel_update_stream(port_);
 
-  void wire_prepare_view_update_stream(NativePortType port_) =>
-      wasmModule.wire_prepare_view_update_stream(port_);
-
   dynamic /* void */ wire_prepare_channels() =>
       wasmModule.wire_prepare_channels();
 
@@ -92,10 +81,4 @@ class BridgeWire extends FlutterRustBridgeWasmWireBase<BridgeWasmModule> {
   dynamic /* void */ wire_send_user_action(
           String task_address, List<dynamic> serialized) =>
       wasmModule.wire_send_user_action(task_address, serialized);
-
-  dynamic /* void */ wire_clean_viewmodel() =>
-      wasmModule.wire_clean_viewmodel();
-
-  dynamic /* List<dynamic>? */ wire_read_viewmodel(String item_address) =>
-      wasmModule.wire_read_viewmodel(item_address);
 }

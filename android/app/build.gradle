@@ -71,12 +71,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-def ANDROID_NDK = localProperties.getProperty('ndk.dir')
-
 [
-        Debug: null,
-        Profile: '--release',
-        Release: '--release'
+    Debug: null,
+    Profile: '--release',
+    Release: '--release'
 ].each {
     def taskPostfix = it.key
     def profileMode = it.value
@@ -87,16 +85,16 @@ def ANDROID_NDK = localProperties.getProperty('ndk.dir')
     }
     tasks.register("cargoBuild$taskPostfix", Exec) {
         workingDir "../../native/hub"
-        environment ANDROID_NDK_HOME: "$ANDROID_NDK"
+        environment ANDROID_NDK_HOME: file("${project.android.sdkDirectory}/ndk")
         commandLine 'cargo', 'ndk',
-                // the 2 ABIs below are used by real Android devices
-                '-t', 'armeabi-v7a',
-                '-t', 'arm64-v8a',
-                // the below 2 ABIs are usually used for Android simulators,
-                // add or remove these ABIs as needed.
-                '-t', 'x86',
-                '-t', 'x86_64',
-                '-o', '../../android/app/src/main/jniLibs', 'build'
+            // the 2 ABIs below are used by real Android devices
+            '-t', 'armeabi-v7a',
+            '-t', 'arm64-v8a',
+            // the below 2 ABIs are usually used for Android simulators,
+            // add or remove these ABIs as needed.
+            '-t', 'x86',
+            '-t', 'x86_64',
+            '-o', '../../android/app/src/main/jniLibs', 'build'
         if (profileMode != null) {
             args profileMode
         }

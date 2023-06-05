@@ -2,7 +2,7 @@ import 'package:universal_platform/universal_platform.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:window_manager/window_manager.dart';
 import 'app.dart';
 import 'constants.dart';
 import 'bridge/wrapper.dart';
@@ -16,6 +16,21 @@ void main() async {
   // Initialize packages.
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  await windowManager.ensureInitialized();
+
+  // Set desktop window shape.
+  if (UniversalPlatform.isWindows ||
+      UniversalPlatform.isLinux ||
+      UniversalPlatform.isMacOS) {
+    WindowOptions windowOptions = const WindowOptions(
+      size: initialSize,
+      minimumSize: minimumSize,
+      center: true,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+    });
+  }
 
   // Run everything.
   runApp(
@@ -30,16 +45,4 @@ void main() async {
       child: const App(),
     ),
   );
-
-  // Set desktop window shape.
-  if (UniversalPlatform.isWindows ||
-      UniversalPlatform.isLinux ||
-      UniversalPlatform.isMacOS) {
-    doWhenWindowReady(() {
-      appWindow.minSize = minimumSize;
-      appWindow.size = initialSize;
-      appWindow.alignment = Alignment.center;
-      appWindow.show();
-    });
-  }
 }

@@ -35,7 +35,6 @@ type UserActionReceiver = Receiver<UserAction>;
 // For thread 0 running Dart
 thread_local! {
     pub static USER_ACTION_SENDER: Cell<UserActionSender> = RefCell::new(None);
-
 }
 
 // For thread 1~N running Rust

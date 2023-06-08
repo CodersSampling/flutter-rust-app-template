@@ -1,0 +1,16 @@
+syntax = "proto3";
+package basic;
+
+message SampleNumber {
+    int32 value = 1;
+    int32 dummy_one = 2;
+    int32 dummy_two = 3;
+    repeated int32 dummy_three = 4;
+}
+
+message SampleLetter {
+    string letter = 1;
+    int32 dummy_one = 2;
+    int32 dummy_two = 3;
+    repeated int32 dummy_three = 4;
+}

@@ -2,6 +2,7 @@ use tokio::task::spawn;
 
 mod bridge;
 mod data_model;
+mod messages;
 mod sample_functions;
 mod with_user_action;
 

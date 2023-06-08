@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:messagepack/messagepack.dart';
 import 'bridge/wrapper.dart';
+import 'messages/basic.pb.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -79,11 +79,11 @@ class Home extends StatelessWidget {
                 if (serialized == null) {
                   return Text('counter.blankText'.tr());
                 } else {
-                  // Unpack serialized Messagepack bytes data.
-                  var tree = Unpacker.fromList(serialized.bytes).unpackMap();
-                  String numberText = tree['value'].toString();
+                  // Unpack serialized Protobuf bytes data.
+                  var message = SampleNumber.fromBuffer(serialized.bytes);
+                  var number = message.value;
                   return Text('counter.informationText'.tr(namedArgs: {
-                    'theValue': numberText,
+                    'theValue': number.toString(),
                   }));
                 }
               },
@@ -93,15 +93,21 @@ class Home extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Serialized payload = Serialized(
-            bytes: Uint8List(0),
-            formula: 'none',
+          var serialized = Serialized(
+            // These message classes generated from Protobuf files
+            // will be used often.
+            bytes: SampleLetter(
+                letter: 'Hello from Dart!',
+                dummyOne: 1,
+                dummyTwo: 2,
+                dummyThree: [3, 4, 5]).writeToBuffer(),
+            formula: 'exchange/protobuf',
           );
           // Use `sendUserAction` from `bridge/wrapper.dart`
           // to send the user action to Rust.
           sendUserAction(
             'someTaskCategory.calculateSomething',
-            payload,
+            serialized,
           );
         },
         tooltip: 'Increment',

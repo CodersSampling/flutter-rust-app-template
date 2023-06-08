@@ -340,6 +340,12 @@ elif sys.argv[1] == "serve-web":
     command += f" --crate=./native/hub/"
     os.system(command)
 
+elif sys.argv[1] == "protobuf-build":
+    command = "dart run build_runner build"
+    os.system(command)
+    command = "cargo build"
+    os.system(command)
+
 else:
     print("No such option for automation is available.")
 

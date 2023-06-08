@@ -1,0 +1,6 @@
+syntax = "proto3";
+package sample_module;
+
+message DummySchema {
+    bool some = 1;
+}

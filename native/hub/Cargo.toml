@@ -6,6 +6,11 @@ edition = "2021"
 [lib]
 crate-type = ["lib", "cdylib", "staticlib"]
 
+[build-dependencies]
+prost-build = "0.11.9"
+protobuf-src = "1.1.0"
+glob = "0.3.1"
+
 [dependencies]
 # Downloaded
 flutter_rust_bridge = { version = "1.77.1", features = [
@@ -14,7 +19,6 @@ flutter_rust_bridge = { version = "1.77.1", features = [
 ] }
 tokio = { version = "1.28.2", features = ["full"] }
 lazy_static = "1.4.0"
-serde_json = "1.0.93"
-rmp-serde = "1.1.1"
+prost = "0.11.9"
 # In workspace
 sample_crate = { path = "../sample_crate" }

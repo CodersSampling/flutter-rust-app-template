@@ -8,9 +8,9 @@ use tokio::sync::RwLock;
 /// This function is meant to be called when Dart's hot restart is triggered in debug mode.
 #[cfg(debug_assertions)]
 pub async fn clean_model() {
-    *SAMPLE_NUMBERS.write().await = HashMap::new();
+    *SAMPLE_COLLECTION.write().await = HashMap::new();
 }
 
 lazy_static! {
-    pub static ref SAMPLE_NUMBERS: RwLock<HashMap<String, i32>> = RwLock::new(HashMap::new());
+    pub static ref SAMPLE_COLLECTION: RwLock<HashMap<String, i32>> = RwLock::new(HashMap::new());
 }

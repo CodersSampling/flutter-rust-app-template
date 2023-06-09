@@ -19,7 +19,7 @@ class Home extends StatelessWidget {
             StreamBuilder<String>(
               // Receive viewmodel update signals from Rust
               // with `viewmodelUpdateBroadcaster` from `bridge/wrapper.dart`,
-              // For better performance, filters signals
+              // For better performance, filter signals
               // by checking `itemAddress` with the `where` method.
               // This approach allows the builder to rebuild its widget
               // only when there are changes

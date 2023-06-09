@@ -13,7 +13,7 @@ pub async fn calculate_something(serialized: Serialized) {
     let received = messages::basic::SampleLetter::decode(buffer).unwrap();
     println!("{:?}", received.letter);
     let key = "someValueCategory.thisNumber";
-    let mut hashmap = data_model::SAMPLE_NUMBERS.write().await;
+    let mut hashmap = data_model::SAMPLE_COLLECTION.write().await;
     if !hashmap.contains_key(key) {
         hashmap.insert(String::from(key), 0);
     }
@@ -90,7 +90,7 @@ pub async fn keep_adding_one() {
     loop {
         tokio::time::sleep(std::time::Duration::from_secs(1)).await;
         let key = "someValueCategory.thisNumber";
-        let mut hashmap = data_model::SAMPLE_NUMBERS.write().await;
+        let mut hashmap = data_model::SAMPLE_COLLECTION.write().await;
         if !hashmap.contains_key(key) {
             hashmap.insert(String::from(key), 0);
         }

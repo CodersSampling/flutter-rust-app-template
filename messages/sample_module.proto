@@ -4,3 +4,7 @@ package sample_module;
 message DummySchema {
     bool some = 1;
 }
+
+message OtherDummySchema {
+    bool some = 1;
+}

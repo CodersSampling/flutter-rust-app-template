@@ -45,7 +45,8 @@ You can use an IDE of your choice. However, [Visual Studio Code](https://code.vi
 
 1. Git: Go to the [official downloads page](https://git-scm.com/downloads)
 1. Python: This is needed to automate development process. Download it from the app store if your system doesn't provide a pre-installed version. It's also available at [official downloads page](https://www.python.org/downloads/). Make sure `python` is available in the path environment variable. Version 3.11 or higher is recommended.
-1. Rust: Refer to the [official docs](https://doc.rust-lang.org/book/ch01-01-installation.html). Version 1.69 or higher is recommended.
+1. Protobuf: This is needed to generate schema code for communication between Dart and Rust. Refer to [related docs](https://grpc.io/docs/protoc-installation/) for installation guides. Make sure `protoc` is available in the path environment variable.
+1. Rust: Refer to the [official docs](https://doc.rust-lang.org/book/ch01-01-installation.html).
 1. Flutter: Refer to the [official docs](https://docs.flutter.dev/get-started/install). Version 3.10 or higher is recommended.
 
 And then you can make sure that your system is ready for development in the terminal.
@@ -53,11 +54,12 @@ And then you can make sure that your system is ready for development in the term
 ```
 git --version
 python --version
+protoc --version
 rustc --version
 flutter doctor
 ```
 
-Read the output carefully and install the necessary components described in the terminal. You can repeat these commands to verify your system status while you are installing those components.
+Carefully read the output and install the necessary components described in the terminal. You can repeat these commands to verify the status of your system while you are installing those components. If there are no warnings in the output, you are good to go!
 
 ## Extra Steps
 
@@ -88,10 +90,11 @@ Preparing your system with extra build targets can sometimes present various iss
 Install the dependencies.
 
 ```
-pip install -r requirements.txt
+pip install -r automate/requirements.txt
 flutter pub get
-rustup component add clippy
+dart pub global activate protoc_plugin
 cargo install cargo-bloat
+rustup component add clippy
 ```
 
 Generate configuration files or update them from template files if they already exist. Make sure to check the terminal output and fill in those files manually after the generation process is complete.
@@ -111,7 +114,7 @@ python automate code-quality
 Build Protobuf files in `./messages` into Dart and Rust.
 
 ```
-python automate protobuf-build
+python automate message-build
 ```
 
 Run the app in debug mode.

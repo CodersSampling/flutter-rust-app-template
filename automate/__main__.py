@@ -340,11 +340,20 @@ elif sys.argv[1] == "serve-web":
     command += f" --crate=./native/hub/"
     os.system(command)
 
-elif sys.argv[1] == "protobuf-build":
-    command = "dart run build_runner build"
+elif sys.argv[1] == "message-build":
+    # Dart
+    user_path = os.path.expanduser("~")
+    command = "protoc"
+    command += " ./messages/*.proto"
+    command += " --dart_out=./lib"
+    command += f" --plugin={user_path}/.pub-cache/bin/protoc-gen-dart"
     os.system(command)
-    command = "cargo build"
+
+    # Rust
+    command = "cargo build --quiet"
     os.system(command)
+
+    print("Generated Dart and Rust code from Protobuf files in `./messages`")
 
 else:
     print("No such option for automation is available.")
